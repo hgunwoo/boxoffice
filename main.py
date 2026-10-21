@@ -13,27 +13,50 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. 고급 모던 다크/세미-글래스 커스텀 CSS
+# 2. 고급 모던 다크 & 그라데이션 CSS (사이드바 글자색 선명하게 보정)
 st.markdown(
     """
     <style>
-    /* 전체 배경 설정 */
+    /* 메인 앱 배경 (딥 다크 블루 그라데이션) */
     .stApp {
-        background-color: #0f172a;
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
         color: #f8fafc;
     }
     
-    /* 사이드바 스타일링 */
+    /* 사이드바 배경 그라데이션 및 테두리 */
     [data-testid="stSidebar"] {
-        background-color: #1e293b;
+        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
         border-right: 1px solid #334155;
     }
     
-    /* 메인 타이틀 */
+    /* 사이드바 내부의 모든 글자, 라벨, 캡션을 선명한 흰색/밝은 톤으로 지정 */
+    [data-testid="stSidebar"] *, 
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] div {
+        color: #f8fafc !important;
+    }
+
+    /* 사이드바 내 날짜 입력창(Date Input) 내부 텍스트 및 레이아웃 */
+    [data-testid="stSidebar"] input {
+        color: #0f172a !important; /* 입력창 내부 날짜 숫자는 잘 보이도록 어두운색 */
+        background-color: #ffffff !important;
+        font-weight: 600 !important;
+        border-radius: 8px !important;
+    }
+    
+    /* 사이드바 캡션(범례 내용) 선명도 강화 */
+    [data-testid="stSidebar"] .stCaption {
+        color: #cbd5e1 !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* 메인 타이틀 그라데이션 */
     .main-title {
         font-size: 2.3rem;
         font-weight: 800;
-        background: linear-gradient(90deg, #38bdf8, #818cf8);
+        background: linear-gradient(90deg, #38bdf8, #a855f7, #ec4899);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.2rem;
@@ -44,38 +67,41 @@ st.markdown(
         margin-bottom: 1.8rem;
     }
 
-    /* 1위 영화 하이라이트 배너 카드 */
+    /* 1위 영화 하이라이트 고급 그라데이션 카드 */
     .hero-card {
-        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-        border: 1px solid #4338ca;
-        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(67, 56, 202, 0.4) 0%, rgba(147, 51, 234, 0.4) 100%);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(168, 85, 247, 0.4);
+        border-radius: 20px;
         padding: 24px;
         margin-bottom: 24px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
     }
     .hero-badge {
-        background-color: #f59e0b;
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
         color: #000;
-        font-weight: 700;
+        font-weight: 800;
         font-size: 0.8rem;
-        padding: 4px 10px;
+        padding: 4px 12px;
         border-radius: 20px;
         display: inline-block;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
+        letter-spacing: 0.5px;
     }
     .hero-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
         font-weight: 800;
         color: #ffffff;
-        margin-bottom: 16px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
-    /* Streamlit Metric 커스텀 */
+    /* Streamlit Metric 커스텀 카드리프 */
     [data-testid="stMetric"] {
-        background-color: rgba(15, 23, 42, 0.6);
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(8px);
         border: 1px solid #334155;
-        border-radius: 12px;
-        padding: 12px 16px;
+        border-radius: 14px;
+        padding: 14px 18px;
     }
     [data-testid="stMetricLabel"] {
         color: #94a3b8 !important;
@@ -83,7 +109,7 @@ st.markdown(
     }
     [data-testid="stMetricValue"] {
         color: #f8fafc !important;
-        font-size: 1.5rem !important;
+        font-size: 1.6rem !important;
         font-weight: 700 !important;
     }
 
@@ -109,7 +135,7 @@ if "KOBIS_KEY" not in st.secrets:
 
 api_key = st.secrets["KOBIS_KEY"]
 
-# 4. 사이드바 컨트롤러 (한국 시간 기준 가장 늦은 날짜는 '어제')
+# 4. 사이드바 컨트롤러
 seoul_tz = pytz.timezone("Asia/Seoul")
 now_seoul = datetime.datetime.now(seoul_tz)
 yesterday = (now_seoul - datetime.timedelta(days=1)).date()
@@ -126,7 +152,7 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.markdown("#### 📌 **범례 안내**")
+    st.markdown("### 📌 **범례 안내**")
     st.caption("• 🏆 : 누적 관객수 100만 명 돌파")
     st.caption("• 🔺 : 전일 대비 순위 상승")
     st.caption("• 🔹 : 전일 대비 순위 하강")
@@ -229,7 +255,7 @@ with col_chart:
 
     top_5_df = df.head(5).sort_values(by="audiCnt", ascending=True)
 
-    # Plotly 세련된 다크 테마 가로 막대그래프
+    # Plotly 세련된 화려한 그라데이션 가로 막대그래프
     fig = px.bar(
         top_5_df,
         x="audiCnt",
@@ -238,7 +264,7 @@ with col_chart:
         text_auto=",.0f",
         labels={"audiCnt": "관객수", "movieNm": ""},
         color="audiCnt",
-        color_continuous_scale=["#38bdf8", "#818cf8"],
+        color_continuous_scale=["#38bdf8", "#a855f7", "#ec4899"], # 3색 풍부한 그라데이션
     )
 
     fig.update_traces(
