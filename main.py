@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. 고급 모던 다크 & 그라데이션 CSS (날짜 입력창 스타일 완전 보정)
+# 2. 다크 & 그라데이션 CSS (날짜 입력창 및 사이드바 시인성 완전 해결)
 st.markdown(
     """
     <style>
@@ -29,34 +29,41 @@ st.markdown(
         border-right: 1px solid #334155;
     }
     
-    /* 사이드바 내부 기본 텍스트 색상 (선명한 흰색/밝은 톤) */
+    /* 사이드바 내부 텍스트 전체 선명하게 설정 */
+    [data-testid="stSidebar"] *, 
     [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] p,
     [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3,
-    [data-testid="stSidebar"] h4 {
+    [data-testid="stSidebar"] h3 {
         color: #f8fafc !important;
     }
 
-    /* 날짜 입력창(Date Input) 박스 스타일 수정 (어두운 배경 + 명확한 흰색 글씨) */
-    [data-testid="stSidebar"] div[data-baseweb="input"] {
-        background-color: #334155 !important;
-        border: 1px solid #475569 !important;
+    /* 🔥 날짜 입력창(Date Input) 시인성 완전 해결 🔥 */
+    /* 1) 입력 박스 전체 배경을 어두운 테마로 변경 */
+    [data-testid="stSidebar"] div[data-baseweb="input"],
+    [data-testid="stSidebar"] div[data-baseweb="base-input"] {
+        background-color: #1e293b !important;
+        border: 1px solid #64748b !important;
         border-radius: 10px !important;
     }
     
+    /* 2) 텍스트 글자색을 선명한 흰색으로 강제 지정 */
+    [data-testid="stSidebar"] input[type="text"],
     [data-testid="stSidebar"] input {
         color: #ffffff !important;
         -webkit-text-fill-color: #ffffff !important;
-        font-weight: 600 !important;
         background-color: transparent !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
     }
 
-    /* 날짜 선택 아이콘 색상 수정 */
-    [data-testid="stSidebar"] svg {
-        fill: #94a3b8 !important;
-        color: #94a3b8 !important;
+    /* 3) 달력 아이콘 및 도움말 아이콘 색상 보정 */
+    [data-testid="stSidebar"] svg,
+    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] svg {
+        fill: #38bdf8 !important;
+        color: #38bdf8 !important;
     }
     
     /* 사이드바 캡션(범례 내용) */
