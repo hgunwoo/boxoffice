@@ -5,7 +5,7 @@ import pytz
 import requests
 import streamlit as st
 
-# 1. 페이지 기본 설정 및 모던 웹 스타일링 (CSS)
+# 1. 페이지 기본 설정
 st.set_page_config(
     page_title="박스오피스 대시보드",
     page_icon="🎬",
@@ -13,46 +13,91 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 심플하고 세련된 UI 스타일을 위한 Custom CSS
+# 2. 고급 모던 다크/세미-글래스 커스텀 CSS
 st.markdown(
     """
     <style>
-    /* 메인 배경 및 패딩 정리 */
-    .main {
-        background-color: #f8f9fa;
+    /* 전체 배경 설정 */
+    .stApp {
+        background-color: #0f172a;
+        color: #f8fafc;
     }
     
-    /* 헤더 타이틀 스타일 */
-    .main-header {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #111827;
+    /* 사이드바 스타일링 */
+    [data-testid="stSidebar"] {
+        background-color: #1e293b;
+        border-right: 1px solid #334155;
+    }
+    
+    /* 메인 타이틀 */
+    .main-title {
+        font-size: 2.3rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #38bdf8, #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         margin-bottom: 0.2rem;
     }
-    .sub-header {
+    .sub-title {
         font-size: 0.95rem;
-        color: #6b7280;
-        margin-bottom: 2rem;
+        color: #94a3b8;
+        margin-bottom: 1.8rem;
     }
-    
-    /* Metric 카드 디자인 개선 */
+
+    /* 1위 영화 하이라이트 배너 카드 */
+    .hero-card {
+        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        border: 1px solid #4338ca;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .hero-badge {
+        background-color: #f59e0b;
+        color: #000;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+    .hero-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 16px;
+    }
+
+    /* Streamlit Metric 커스텀 */
+    [data-testid="stMetric"] {
+        background-color: rgba(15, 23, 42, 0.6);
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 12px 16px;
+    }
+    [data-testid="stMetricLabel"] {
+        color: #94a3b8 !important;
+        font-size: 0.85rem !important;
+    }
     [data-testid="stMetricValue"] {
-        font-size: 1.8rem !important;
+        color: #f8fafc !important;
+        font-size: 1.5rem !important;
         font-weight: 700 !important;
-        color: #1f2937 !important;
     }
-    
-    /* 세퍼레이터 라이트 스타일 */
+
+    /* 구분선 라이트 처리 */
     hr {
-        margin: 2rem 0 !important;
-        border-top: 1px solid #e5e7eb !important;
+        border-color: #334155 !important;
+        margin: 1.5rem 0 !important;
     }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# 2. API 키 검증
+# 3. API 키 검증
 if "KOBIS_KEY" not in st.secrets:
     st.error(
         "🔑 **인증키 오류**: secrets에 `KOBIS_KEY`가 설정되지 않았습니다.\n\n"
@@ -64,13 +109,13 @@ if "KOBIS_KEY" not in st.secrets:
 
 api_key = st.secrets["KOBIS_KEY"]
 
-# 3. 사이드바 컨트롤러 (날짜 선택기 및 서비스 안내)
+# 4. 사이드바 컨트롤러
 seoul_tz = pytz.timezone("Asia/Seoul")
 now_seoul = datetime.datetime.now(seoul_tz)
 yesterday = (now_seoul - datetime.timedelta(days=1)).date()
 
 with st.sidebar:
-    st.title("🎬 BoxOffice")
+    st.markdown("## 🎬 **BOX OFFICE**")
     st.markdown("---")
 
     selected_date = st.date_input(
@@ -81,24 +126,25 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.caption("💡 **Tip**")
-    st.caption("• 🏆 : 누적 관객수 100만 명 돌파 영화")
-    st.caption("• 🔺 / 🔹 : 전일 대비 순위 변동")
+    st.markdown("#### 📌 **범례 안내**")
+    st.caption("• 🏆 : 누적 관객수 100만 명 돌파")
+    st.caption("• 🔺 : 전일 대비 순위 상승")
+    st.caption("• 🔹 : 전일 대비 순위 하강")
 
 target_dt = selected_date.strftime("%Y%m%d")
 formatted_date = selected_date.strftime("%Y년 %m월 %d일")
 
-# 4. 메인 타이틀 영역
+# 5. 메인 헤더
 st.markdown(
-    f'<div class="main-header">{selected_date.strftime("%Y.%m.%d")} 일별 박스오피스</div>',
+    f'<div class="main-title">{selected_date.strftime("%Y.%m.%d")} 일별 박스오피스</div>',
     unsafe_allow_html=True,
 )
 st.markdown(
-    f'<div class="sub-header">영화진흥위원회(KOBIS) 공식 집계 데이터 기준 ({formatted_date})</div>',
+    f'<div class="sub-title">영화진흥위원회(KOBIS) 공식 집계 데이터 기준 ({formatted_date})</div>',
     unsafe_allow_html=True,
 )
 
-# 5. KOBIS API 데이터 요청
+# 6. KOBIS API 데이터 요청
 url = (
     "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
     f"?key={api_key}&targetDt={target_dt}"
@@ -109,13 +155,10 @@ try:
     response.raise_for_status()
     data = response.json()
 except requests.exceptions.RequestException:
-    st.error(
-        "📡 **네트워크 요청 실패**: KOBIS 서버와 통신할 수 없습니다.\n\n"
-        "잠시 후 다시 시도해 주거나 인터넷 연결을 확인하세요."
-    )
+    st.error("📡 **네트워크 요청 실패**: KOBIS 서버와 통신할 수 없습니다.")
     st.stop()
 
-# 6. 응답 예외 처리
+# 7. 응답 예외 처리
 if "faultInfo" in data:
     fault_msg = data["faultInfo"].get("message", "알 수 없는 오류가 발생했습니다.")
     st.error(f"⚠️ **KOBIS API 오류**: {fault_msg}")
@@ -128,7 +171,7 @@ if not daily_list:
     st.info("ℹ️ **그날은 아직 집계 전입니다.**")
     st.stop()
 
-# 7. 데이터 정제 및 가공
+# 8. 데이터 가공
 df = pd.DataFrame(daily_list)
 
 numeric_cols = ["rank", "rankInten", "audiCnt", "audiAcc", "scrnCnt", "showCnt"]
@@ -136,11 +179,9 @@ for col in numeric_cols:
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
 
-# 순위 증감 레이블 생성 함수
 def format_rank_change(row):
     if row.get("rankOldAndNew") == "NEW":
         return "NEW"
-
     change = row["rankInten"]
     if change > 0:
         return f"🔺 {abs(change)}"
@@ -152,16 +193,23 @@ def format_rank_change(row):
 
 df["rankChange"] = df.apply(format_rank_change, axis=1)
 
-# 100만 관객 돌파 시 트로피 아이콘 추가
 df["display_movieNm"] = df.apply(
     lambda x: f"🏆 {x['movieNm']}" if x["audiAcc"] >= 1000000 else x["movieNm"],
     axis=1,
 )
 
-# 8. 상단 1위 영화 하이라이트 (KPI Metrics)
+# 9. 1위 영화 하이라이트 배너 (Hero Section)
 top_1 = df.iloc[0]
 
-st.markdown(f"### 🥇 1위 영화 · **{top_1['display_movieNm']}**")
+st.markdown(
+    f"""
+    <div class="hero-card">
+        <div class="hero-badge">DAILY NO.1</div>
+        <div class="hero-title">{top_1['display_movieNm']}</div>
+    </div>
+""",
+    unsafe_allow_html=True,
+)
 
 m_col1, m_col2, m_col3 = st.columns(3)
 with m_col1:
@@ -173,15 +221,15 @@ with m_col3:
 
 st.markdown("---")
 
-# 9. 세련된 Plotly 가로 막대그래프 (TOP 5)
+# 10. 차트 및 데이터 표 (2열 레이아웃)
 col_chart, col_table = st.columns([1, 1], gap="large")
 
 with col_chart:
-    st.markdown("### 📊 관객수 TOP 5")
+    st.markdown("### 📊 **관객수 TOP 5**")
 
     top_5_df = df.head(5).sort_values(by="audiCnt", ascending=True)
 
-    # Plotly 커스텀 막대그래프
+    # Plotly 세련된 다크 테마 가로 막대그래프
     fig = px.bar(
         top_5_df,
         x="audiCnt",
@@ -189,28 +237,35 @@ with col_chart:
         orientation="h",
         text_auto=",.0f",
         labels={"audiCnt": "관객수", "movieNm": ""},
+        color="audiCnt",
+        color_continuous_scale=["#38bdf8", #818cf8],
     )
 
     fig.update_traces(
-        marker_color="#3B82F6",
         textposition="outside",
         cliponaxis=False,
+        hovertemplate="<b>%{y}</b><br>관객수: %{x:,}명<extra></extra>",
     )
 
     fig.update_layout(
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        xaxis=dict(showgrid=True, gridcolor="#f3f4f6", title=""),
-        yaxis=dict(showgrid=False),
-        margin=dict(l=0, r=40, t=10, b=0),
-        height=320,
+        xaxis=dict(
+            showgrid=True,
+            gridcolor="#334155",
+            title="",
+            tickfont=dict(color="#94a3b8"),
+        ),
+        yaxis=dict(showgrid=False, tickfont=dict(color="#f8fafc", size=13)),
+        coloraxis_showscale=False,
+        margin=dict(l=0, r=45, t=10, b=0),
+        height=350,
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
-# 10. 전체 박스오피스 데이터 테이블
 with col_table:
-    st.markdown("### 📋 박스오피스 순위표")
+    st.markdown("### 📋 **박스오피스 전체 순위**")
 
     display_df = df[
         [
@@ -237,7 +292,7 @@ with col_table:
         display_df,
         use_container_width=True,
         hide_index=True,
-        height=320,
+        height=350,
         column_config={
             "순위": st.column_config.NumberColumn(width="small"),
             "변동": st.column_config.TextColumn(width="small"),
