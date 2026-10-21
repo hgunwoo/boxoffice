@@ -109,7 +109,7 @@ if "KOBIS_KEY" not in st.secrets:
 
 api_key = st.secrets["KOBIS_KEY"]
 
-# 4. 사이드바 컨트롤러
+# 4. 사이드바 컨트롤러 (한국 시간 기준 가장 늦은 날짜는 '어제')
 seoul_tz = pytz.timezone("Asia/Seoul")
 now_seoul = datetime.datetime.now(seoul_tz)
 yesterday = (now_seoul - datetime.timedelta(days=1)).date()
@@ -238,7 +238,7 @@ with col_chart:
         text_auto=",.0f",
         labels={"audiCnt": "관객수", "movieNm": ""},
         color="audiCnt",
-        color_continuous_scale=["#38bdf8", #818cf8],
+        color_continuous_scale=["#38bdf8", "#818cf8"],
     )
 
     fig.update_traces(
