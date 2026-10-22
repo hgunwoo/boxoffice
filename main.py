@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. 어두운 그라데이션 배경 및 글씨 대조 CSS 설정
+# 2. 어두운 그라데이션 배경 및 입력창 검정 글씨 강제 고정 CSS
 st.markdown(
     """
     <style>
@@ -28,12 +28,35 @@ st.markdown(
         border-right: 1px solid #334155 !important;
     }
 
-    /* 모든 텍스트 및 라벨 흰색으로 대조 강제 처리 */
-    html, body, [class*="css"], .stMarkdown, p, span, label, h1, h2, h3, h4, h5, h6 {
+    /* 일반 텍스트 및 라벨 흰색 설정 */
+    html, body, .stMarkdown, p, span, label, h1, h2, h3, h4, h5, h6 {
         color: #ffffff !important;
     }
 
-    /* 🔥 탭(Tabs) 글자 시인성 강화 🔥 */
+    /* 🔥 흰색 배경 입력 위젯(날짜 입력창, 버튼, 입력 박스, 드롭다운 등) 내부 검정 글씨 강제 고정 🔥 */
+    input, 
+    textarea, 
+    select,
+    div[data-baseweb="select"] *,
+    div[data-baseweb="input"] *,
+    div[data-baseweb="base-input"] *,
+    button[kind="secondary"],
+    button[kind="primary"] {
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        font-weight: 700 !important;
+    }
+
+    /* 버튼 글자색 및 배경 확실하게 보정 */
+    .stButton > button {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-radius: 8px !important;
+        border: 1px solid #cbd5e1 !important;
+        font-weight: bold !important;
+    }
+
+    /* 탭(Tabs) 글자 시인성 강화 */
     button[data-baseweb="tab"] p,
     button[data-baseweb="tab"] span {
         color: #f8fafc !important;
@@ -73,7 +96,7 @@ st.markdown(
         margin-bottom: 12px;
     }
 
-    /* 영화 프로필 카드 (어두운 카드 + 밝은 글씨 대조) */
+    /* 영화 프로필 카드 */
     .profile-card {
         background: rgba(30, 41, 59, 0.8);
         border: 1px solid #475569;
@@ -382,14 +405,12 @@ with tab2:
 with tab3:
     st.markdown("### 💬 **상영 영화 정보 및 한줄 후기 작성**")
 
-    # 상영 영화 목록 드롭다운 선택
     movie_list = df["movieNm"].tolist()
     selected_movie_name = st.selectbox("🎬 후기를 작성하거나 조회할 영화를 선택하세요:", movie_list)
 
     selected_movie_row = df[df["movieNm"] == selected_movie_name].iloc[0]
     selected_movie_detail = get_movie_detail(selected_movie_row["movieCd"])
 
-    # 선택된 영화 프로필 카드 표시
     st.markdown(
         f"""
         <div class="profile-card" style="margin-top: 10px; margin-bottom: 20px;">
@@ -424,7 +445,6 @@ with tab3:
 
     st.divider()
 
-    # 등록된 후기 목록 보기
     st.subheader(f"💬 '{selected_movie_name}' 등록된 후기")
     saved_reviews = st.session_state.reviews.get(selected_movie_name, [])
 
