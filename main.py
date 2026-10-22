@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. 어두운 그라데이션 배경 및 달력 팝업 시인성 완전 보정 CSS
+# 2. 어두운 그라데이션 배경 및 달력 팝업 완전 분리 CSS
 st.markdown(
     """
     <style>
@@ -33,14 +33,25 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* 🔥 달력 팝업(Popover) 내부는 표준 라이트 테마로 정상 표시되도록 보정 🔥 */
-    div[data-baseweb="popover"] * {
+    /* 🔥 달력 팝업(Popover/Calendar) 시인성 완전 해결 🔥 */
+    div[data-baseweb="popover"],
+    div[data-baseweb="calendar"],
+    div[role="dialog"] {
+        background-color: #ffffff !important;
+    }
+
+    div[data-baseweb="popover"] *,
+    div[data-baseweb="calendar"] *,
+    div[role="dialog"] * {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
+        background-color: transparent !important;
     }
-    
-    div[data-baseweb="calendar"] {
-        background-color: #ffffff !important;
+
+    /* 달력 날짜 버튼 hover 및 선택 스타일 */
+    div[data-baseweb="calendar"] aria-selected="true" {
+        background-color: #38bdf8 !important;
+        color: #ffffff !important;
     }
 
     /* 입력 위젯(날짜 선택창, 드롭다운 등) 내부 검정 글씨 고정 */
@@ -162,11 +173,11 @@ if "KOBIS_KEY" not in st.secrets:
 
 api_key = st.secrets["KOBIS_KEY"]
 
-# 4. 사이드바 날짜 선택 기능 (min_value와 max_value 설정)
+# 4. 사이드바 날짜 선택 기능 (범위 명확화)
 seoul_tz = pytz.timezone("Asia/Seoul")
 now_seoul = datetime.datetime.now(seoul_tz)
 yesterday = (now_seoul - datetime.timedelta(days=1)).date()
-min_date = datetime.date(2004, 1, 1)  # KOBIS 데이터 집계 시작일
+min_date = datetime.date(2004, 1, 1)
 
 with st.sidebar:
     st.title("🎬 BOX OFFICE")
@@ -175,9 +186,9 @@ with st.sidebar:
     selected_date = st.date_input(
         "📅 조회 날짜 선택",
         value=yesterday,
-        min_value=min_date,  # 이전 날짜 선택 가능하도록 하한선 설정
-        max_value=yesterday, # 오늘 이후는 선택 불가
-        help="2004년 1월 1년부터 어제 날짜까지 자유롭게 선택 가능합니다.",
+        min_value=min_date,
+        max_value=yesterday,
+        help="2004년 1월 1일부터 어제 날짜까지 선택 가능합니다.",
     )
 
     st.divider()
@@ -214,7 +225,7 @@ box_office_result = data.get("boxOfficeResult", {})
 daily_list = box_office_result.get("dailyBoxOfficeList", [])
 
 if not daily_list:
-    st.warning("ℹ️ **그날은 아직 집계 전이거나 데이터가 없습니다.**")
+    st.warning("ℹ️ **선택하신 날짜의 박스오피스 집계 데이터가 없습니다.**")
     st.stop()
 
 df = pd.DataFrame(daily_list)
@@ -254,12 +265,8 @@ def get_movie_detail(movie_cd):
         res_data = res.json()
         movie_info = res_data.get("movieInfoResult", {}).get("movieInfo", {})
 
-        genres = ", ".join(
-            [g.get("genreNm") for g in movie_info.get("genres", [])]
-        )
-        directors = ", ".join(
-            [d.get("peopleNm") for d in movie_info.get("directors", [])]
-        )
+        genres = ", ".join([g.get("genreNm") for g in movie_info.get("genres", [])])
+        directors = ", ".join([d.get("peopleNm") for d in movie_info.get("directors", [])])
         show_tm = movie_info.get("showTm", "")
         nation = (
             movie_info.get("nations", [{}])[0].get("nationNm", "")
