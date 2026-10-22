@@ -12,73 +12,36 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. 어두운 그라데이션 배경 및 달력 팝업 완전 분리 CSS
+# 2. 어두운 그라데이션 배경 및 깔끔한 UI CSS (달력 충돌 CSS 완벽 제거)
 st.markdown(
     """
     <style>
     /* 전체 메인 배경 (어두운 블루-퍼플 그라데이션) */
     .stApp {
-        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%) !important;
-        color: #ffffff !important;
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+        color: #f8fafc;
     }
 
-    /* 사이드바 어두운 배경 및 테두리 */
+    /* 사이드바 배경 및 테두리 */
     [data-testid="stSidebar"] {
-        background: #0f172a !important;
-        border-right: 1px solid #334155 !important;
+        background-color: #0f172a !important;
+        border-right: 1px solid #334155;
     }
 
-    /* 일반 텍스트 및 라벨 흰색 설정 */
-    html, body, .stMarkdown, p, span, label, h1, h2, h3, h4, h5, h6 {
-        color: #ffffff !important;
+    /* 사이드바 텍스트 색상 보정 */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span {
+        color: #f8fafc !important;
     }
 
-    /* 🔥 달력 팝업(Popover/Calendar) 시인성 완전 해결 🔥 */
-    div[data-baseweb="popover"],
-    div[data-baseweb="calendar"],
-    div[role="dialog"] {
-        background-color: #ffffff !important;
-    }
-
-    div[data-baseweb="popover"] *,
-    div[data-baseweb="calendar"] *,
-    div[role="dialog"] * {
-        color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
-        background-color: transparent !important;
-    }
-
-    /* 달력 날짜 버튼 hover 및 선택 스타일 */
-    div[data-baseweb="calendar"] aria-selected="true" {
-        background-color: #38bdf8 !important;
-        color: #ffffff !important;
-    }
-
-    /* 입력 위젯(날짜 선택창, 드롭다운 등) 내부 검정 글씨 고정 */
-    input, 
-    textarea, 
-    select,
-    div[data-baseweb="select"] *,
-    div[data-baseweb="input"] *,
-    div[data-baseweb="base-input"] * {
-        color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
-        font-weight: 700 !important;
-    }
-
-    /* 버튼 스타일 */
-    .stButton > button {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        border-radius: 8px !important;
-        border: 1px solid #cbd5e1 !important;
-        font-weight: bold !important;
-    }
-
-    /* 탭(Tabs) 글자 시인성 */
+    /* 탭(Tabs) 글자 시인성 고정 */
     button[data-baseweb="tab"] p,
     button[data-baseweb="tab"] span {
-        color: #f8fafc !important;
+        color: #cbd5e1 !important;
         font-size: 1.05rem !important;
         font-weight: 600 !important;
     }
@@ -173,7 +136,7 @@ if "KOBIS_KEY" not in st.secrets:
 
 api_key = st.secrets["KOBIS_KEY"]
 
-# 4. 사이드바 날짜 선택 기능 (범위 명확화)
+# 4. 사이드바 날짜 선택 기능
 seoul_tz = pytz.timezone("Asia/Seoul")
 now_seoul = datetime.datetime.now(seoul_tz)
 yesterday = (now_seoul - datetime.timedelta(days=1)).date()
