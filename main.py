@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. 다크 & 세련된 CSS (텍스트 가독성 및 시인성 완벽 개선)
+# 2. 다크 & 세련된 CSS (탭 메뉴 및 글자 시인성 완벽 고정)
 st.markdown(
     """
     <style>
@@ -23,15 +23,31 @@ st.markdown(
         color: #f8fafc;
     }
     
-    /* 탭(Tabs) 글자 색상 및 스타일 보정 */
-    button[data-baseweb="tab"] {
-        color: #94a3b8 !important;
+    /* 🔥 탭(Tabs) 글자 시인성 완벽 해결 🔥 */
+    /* 비선택 탭 글자색 (밝은 회색) */
+    button[data-baseweb="tab"] p,
+    button[data-baseweb="tab"] span,
+    div[data-baseweb="tab"] p,
+    div[data-baseweb="tab"] span {
+        color: #cbd5e1 !important;
         font-weight: 600 !important;
-        font-size: 1rem !important;
+        font-size: 1.05rem !important;
     }
-    button[data-baseweb="tab"][aria-selected="true"] {
-        color: #f8fafc !important;
+    
+    /* 선택된 탭 글자색 (밝은 하늘색) */
+    button[data-baseweb="tab"][aria-selected="true"] p,
+    button[data-baseweb="tab"][aria-selected="true"] span,
+    div[data-baseweb="tab"][aria-selected="true"] p,
+    div[data-baseweb="tab"][aria-selected="true"] span {
+        color: #38bdf8 !important;
         font-weight: 800 !important;
+    }
+
+    /* 사이드바 기본 텍스트 */
+    [data-testid="stSidebar"] *,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p {
+        color: #f8fafc !important;
     }
     
     /* 메인 타이틀 그라데이션 */
@@ -73,7 +89,7 @@ st.markdown(
         color: #ffffff;
     }
 
-    /* Metric 수치 카드 글자색 선명하게 고정 */
+    /* Metric 수치 카드 글자색 */
     [data-testid="stMetric"] {
         background: #1e293b !important;
         border: 1px solid #334155 !important;
@@ -81,12 +97,12 @@ st.markdown(
         padding: 14px 18px !important;
     }
     [data-testid="stMetricLabel"] p {
-        color: #cbd5e1 !important; /* 지표 라벨 (당일 관객수 등) */
+        color: #cbd5e1 !important;
         font-size: 0.9rem !important;
         font-weight: 600 !important;
     }
     [data-testid="stMetricValue"] div {
-        color: #38bdf8 !important; /* 지표 수치 밝은 하늘색 */
+        color: #38bdf8 !important;
         font-size: 1.7rem !important;
         font-weight: 800 !important;
     }
