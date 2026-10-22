@@ -33,13 +33,15 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* 탭(Tabs) 글자 시인성 강화 */
-    button[data-baseweb="tab"] p {
-        color: #cbd5e1 !important;
+    /* 🔥 탭(Tabs) 글자 시인성 강화 🔥 */
+    button[data-baseweb="tab"] p,
+    button[data-baseweb="tab"] span {
+        color: #f8fafc !important;
         font-size: 1.05rem !important;
         font-weight: 600 !important;
     }
-    button[data-baseweb="tab"][aria-selected="true"] p {
+    button[data-baseweb="tab"][aria-selected="true"] p,
+    button[data-baseweb="tab"][aria-selected="true"] span {
         color: #38bdf8 !important;
         font-size: 1.05rem !important;
         font-weight: 800 !important;
@@ -112,6 +114,10 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
+# 세션 상태 초기화 (작성된 영화 후기 저장용)
+if "reviews" not in st.session_state:
+    st.session_state.reviews = {}
 
 # 3. API 키 검증
 if "KOBIS_KEY" not in st.secrets:
@@ -204,7 +210,7 @@ df["display_movieNm"] = df.apply(
     axis=1,
 )
 
-# 8. 영화 상세정보(장르, 감독, 상영시간 등) 조회 함수 (KOBIS 상세 API)
+# 8. 영화 상세정보 조회 함수 (KOBIS 상세 API)
 def get_movie_detail(movie_cd):
     detail_url = (
         "http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json"
@@ -254,13 +260,15 @@ st.markdown(
 )
 
 # 10. 탭 메뉴 구성
-tab1, tab2 = st.tabs(["📊 메인 대시보드", "🏆 100만 관객 돌파 영화 목록"])
+tab1, tab2, tab3 = st.tabs(
+    ["📊 메인 대시보드", "🏆 100만 관객 돌파 영화 목록", "💬 영화 후기 작성 및 정보"]
+)
 
+# TAB 1: 메인 대시보드
 with tab1:
     top_1 = df.iloc[0]
     top_1_detail = get_movie_detail(top_1["movieCd"])
 
-    # 1위 영화 하이라이트 & 상세 프로필(영화 설명 포함) 좌우 배치
     col_hero, col_profile = st.columns([1.2, 1], gap="medium")
 
     with col_hero:
@@ -303,7 +311,6 @@ with tab1:
 
     st.divider()
 
-    # 상위 5개 영화 막대그래프 & 전체 순위 표
     col_chart, col_table = st.columns([1, 1], gap="large")
 
     with col_chart:
@@ -347,6 +354,7 @@ with tab1:
             },
         )
 
+# TAB 2: 100만 관객 돌파 영화
 with tab2:
     st.markdown("### 🏆 **누적 관객수 100만 명 돌파 영화 프로필**")
 
@@ -369,3 +377,67 @@ with tab2:
             """,
                 unsafe_allow_html=True,
             )
+
+# TAB 3: 영화 후기 작성 및 상세 설명
+with tab3:
+    st.markdown("### 💬 **상영 영화 정보 및 한줄 후기 작성**")
+
+    # 상영 영화 목록 드롭다운 선택
+    movie_list = df["movieNm"].tolist()
+    selected_movie_name = st.selectbox("🎬 후기를 작성하거나 조회할 영화를 선택하세요:", movie_list)
+
+    selected_movie_row = df[df["movieNm"] == selected_movie_name].iloc[0]
+    selected_movie_detail = get_movie_detail(selected_movie_row["movieCd"])
+
+    # 선택된 영화 프로필 카드 표시
+    st.markdown(
+        f"""
+        <div class="profile-card" style="margin-top: 10px; margin-bottom: 20px;">
+            <div class="profile-header">🎬 {selected_movie_row['rank']}위 : {selected_movie_row['movieNm']}</div>
+            <div class="profile-item"><b>📅 개봉일:</b> {selected_movie_row['openDt']}</div>
+            <div class="profile-item"><b>🎭 장르/국가:</b> {selected_movie_detail['genre']} ({selected_movie_detail['nation']})</div>
+            <div class="profile-item"><b>🎬 감독:</b> {selected_movie_detail['director']}</div>
+            <div class="profile-item"><b>⏱️ 상영시간:</b> {selected_movie_detail['showTm']}</div>
+            <div class="profile-item"><b>🎟️ 누적 관객수:</b> {selected_movie_row['audiAcc']:,} 명</div>
+        </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    st.subheader("📝 후기 작성하기")
+    rating = st.select_slider("⭐ 평점 선택", options=["★☆☆☆☆", "★★☆☆☆", "★★★☆☆", "★★★★☆", "★★★★★"], value="★★★★★")
+    review_text = st.text_area("✍️ 영화 후기를 작성해 주세요", placeholder="영화에 대한 느낀 점을 솔직하게 남겨주세요.")
+
+    if st.button("💾 후기 저장하기"):
+        if review_text.strip():
+            if selected_movie_name not in st.session_state.reviews:
+                st.session_state.reviews[selected_movie_name] = []
+            
+            st.session_state.reviews[selected_movie_name].append({
+                "rating": rating,
+                "text": review_text,
+                "date": datetime.datetime.now(seoul_tz).strftime("%Y-%m-%d %H:%M")
+            })
+            st.success("🎉 후기가 성공적으로 저장되었습니다!")
+        else:
+            st.warning("⚠️ 후기 내용을 입력해 주세요.")
+
+    st.divider()
+
+    # 등록된 후기 목록 보기
+    st.subheader(f"💬 '{selected_movie_name}' 등록된 후기")
+    saved_reviews = st.session_state.reviews.get(selected_movie_name, [])
+
+    if saved_reviews:
+        for r in reversed(saved_reviews):
+            st.markdown(
+                f"""
+                <div style="background: rgba(30, 41, 59, 0.5); padding: 12px 16px; border-radius: 10px; border: 1px solid #475569; margin-bottom: 10px;">
+                    <div style="color: #f59e0b; font-weight: bold; margin-bottom: 4px;">{r['rating']} <span style="color: #94a3b8; font-size: 0.8rem; font-weight: normal;">({r['date']})</span></div>
+                    <div style="color: #f8fafc;">{r['text']}</div>
+                </div>
+            """,
+                unsafe_allow_html=True,
+            )
+    else:
+        st.info("아직 등록된 후기가 없습니다. 첫 번째 후기를 남겨보세요!")
