@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. 모던 다크 테마 커스텀 CSS (안정적인 기본 위젯 스타일)
+# 2. 다크 & 세련된 CSS (텍스트 가독성 및 시인성 완벽 개선)
 st.markdown(
     """
     <style>
@@ -21,6 +21,17 @@ st.markdown(
     .stApp {
         background-color: #0f172a;
         color: #f8fafc;
+    }
+    
+    /* 탭(Tabs) 글자 색상 및 스타일 보정 */
+    button[data-baseweb="tab"] {
+        color: #94a3b8 !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+    }
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: #f8fafc !important;
+        font-weight: 800 !important;
     }
     
     /* 메인 타이틀 그라데이션 */
@@ -34,21 +45,21 @@ st.markdown(
     }
     .sub-title {
         font-size: 0.95rem;
-        color: #94a3b8;
+        color: #cbd5e1;
         margin-bottom: 1.5rem;
     }
 
-    /* 1위 영화 카드 (글래스모피즘 & 그라데이션) */
+    /* 1위 영화 배너 카드 */
     .hero-card {
-        background: linear-gradient(135deg, rgba(67, 56, 202, 0.4) 0%, rgba(147, 51, 234, 0.4) 100%);
-        border: 1px solid rgba(168, 85, 247, 0.4);
+        background: linear-gradient(135deg, rgba(67, 56, 202, 0.6) 0%, rgba(147, 51, 234, 0.6) 100%);
+        border: 1px solid rgba(168, 85, 247, 0.5);
         border-radius: 16px;
         padding: 20px 24px;
         margin-bottom: 20px;
     }
     .hero-badge {
         background: linear-gradient(90deg, #f59e0b, #fbbf24);
-        color: #000;
+        color: #000000;
         font-weight: 800;
         font-size: 0.75rem;
         padding: 3px 10px;
@@ -62,19 +73,37 @@ st.markdown(
         color: #ffffff;
     }
 
+    /* Metric 수치 카드 글자색 선명하게 고정 */
+    [data-testid="stMetric"] {
+        background: #1e293b !important;
+        border: 1px solid #334155 !important;
+        border-radius: 14px !important;
+        padding: 14px 18px !important;
+    }
+    [data-testid="stMetricLabel"] p {
+        color: #cbd5e1 !important; /* 지표 라벨 (당일 관객수 등) */
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+    }
+    [data-testid="stMetricValue"] div {
+        color: #38bdf8 !important; /* 지표 수치 밝은 하늘색 */
+        font-size: 1.7rem !important;
+        font-weight: 800 !important;
+    }
+
     /* 영화 프로필 카드 */
     .profile-card {
         background: #1e293b;
         border: 1px solid #334155;
         border-radius: 12px;
-        padding: 16px;
+        padding: 18px;
         margin-bottom: 16px;
     }
     .profile-title {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         font-weight: 700;
         color: #38bdf8;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
     </style>
 """,
@@ -182,11 +211,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 9. 탭(Tab) 구성을 통한 메인 화면 & 100만 관객 영화 목록 분리
+# 9. 탭 메뉴
 tab1, tab2 = st.tabs(["📊 메인 대시보드", "🏆 100만 관객 돌파 영화 목록"])
 
 with tab1:
-    # 1위 영화 하이라이트 배너
+    # 1위 영화 하이라이트
     top_1 = df.iloc[0]
 
     st.markdown(
@@ -290,8 +319,7 @@ with tab1:
 
 with tab2:
     st.markdown("### 🏆 **누적 관객수 100만 명 돌파 영화 프로필**")
-    
-    # 누적 관객 100만 이상 영화 필터링
+
     million_df = df[df["audiAcc"] >= 1000000]
 
     if million_df.empty:
@@ -302,10 +330,10 @@ with tab2:
                 f"""
                 <div class="profile-card">
                     <div class="profile-title">🏆 {row['rank']}위 : {row['movieNm']}</div>
-                    <p style="margin-bottom: 4px; color: #cbd5e1;"><b>📅 개봉일:</b> {row['openDt']}</p>
-                    <p style="margin-bottom: 4px; color: #cbd5e1;"><b>🎟️ 누적 관객수:</b> {row['audiAcc']:,} 명</p>
-                    <p style="margin-bottom: 4px; color: #cbd5e1;"><b>👥 당일 관객수:</b> {row['audiCnt']:,} 명</p>
-                    <p style="margin-bottom: 0px; color: #cbd5e1;"><b>🖥️ 상영 스크린수:</b> {row['scrnCnt']:,} 개</p>
+                    <p style="margin-bottom: 4px; color: #f8fafc;"><b>📅 개봉일:</b> {row['openDt']}</p>
+                    <p style="margin-bottom: 4px; color: #f8fafc;"><b>🎟️ 누적 관객수:</b> {row['audiAcc']:,} 명</p>
+                    <p style="margin-bottom: 4px; color: #f8fafc;"><b>👥 당일 관객수:</b> {row['audiCnt']:,} 명</p>
+                    <p style="margin-bottom: 0px; color: #f8fafc;"><b>🖥️ 상영 스크린수:</b> {row['scrnCnt']:,} 개</p>
                 </div>
             """,
                 unsafe_allow_html=True,
