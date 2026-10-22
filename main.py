@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. 어두운 그라데이션 배경 및 입력창 검정 글씨 강제 고정 CSS
+# 2. 어두운 그라데이션 배경 및 달력 팝업 시인성 완전 보정 CSS
 st.markdown(
     """
     <style>
@@ -33,21 +33,29 @@ st.markdown(
         color: #ffffff !important;
     }
 
-    /* 🔥 흰색 배경 입력 위젯(날짜 입력창, 버튼, 입력 박스, 드롭다운 등) 내부 검정 글씨 강제 고정 🔥 */
+    /* 🔥 달력 팝업(Popover) 내부는 표준 라이트 테마로 정상 표시되도록 보정 🔥 */
+    div[data-baseweb="popover"] * {
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+    }
+    
+    div[data-baseweb="calendar"] {
+        background-color: #ffffff !important;
+    }
+
+    /* 입력 위젯(날짜 선택창, 드롭다운 등) 내부 검정 글씨 고정 */
     input, 
     textarea, 
     select,
     div[data-baseweb="select"] *,
     div[data-baseweb="input"] *,
-    div[data-baseweb="base-input"] *,
-    button[kind="secondary"],
-    button[kind="primary"] {
+    div[data-baseweb="base-input"] * {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
         font-weight: 700 !important;
     }
 
-    /* 버튼 글자색 및 배경 확실하게 보정 */
+    /* 버튼 스타일 */
     .stButton > button {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -56,7 +64,7 @@ st.markdown(
         font-weight: bold !important;
     }
 
-    /* 탭(Tabs) 글자 시인성 강화 */
+    /* 탭(Tabs) 글자 시인성 */
     button[data-baseweb="tab"] p,
     button[data-baseweb="tab"] span {
         color: #f8fafc !important;
@@ -154,10 +162,11 @@ if "KOBIS_KEY" not in st.secrets:
 
 api_key = st.secrets["KOBIS_KEY"]
 
-# 4. 사이드바 날짜 선택 기능
+# 4. 사이드바 날짜 선택 기능 (min_value와 max_value 설정)
 seoul_tz = pytz.timezone("Asia/Seoul")
 now_seoul = datetime.datetime.now(seoul_tz)
 yesterday = (now_seoul - datetime.timedelta(days=1)).date()
+min_date = datetime.date(2004, 1, 1)  # KOBIS 데이터 집계 시작일
 
 with st.sidebar:
     st.title("🎬 BOX OFFICE")
@@ -166,8 +175,9 @@ with st.sidebar:
     selected_date = st.date_input(
         "📅 조회 날짜 선택",
         value=yesterday,
-        max_value=yesterday,
-        help="오늘 날짜 데이터는 아직 집계 중이므로 어제 날짜까지 선택 가능합니다.",
+        min_value=min_date,  # 이전 날짜 선택 가능하도록 하한선 설정
+        max_value=yesterday, # 오늘 이후는 선택 불가
+        help="2004년 1월 1년부터 어제 날짜까지 자유롭게 선택 가능합니다.",
     )
 
     st.divider()
@@ -204,7 +214,7 @@ box_office_result = data.get("boxOfficeResult", {})
 daily_list = box_office_result.get("dailyBoxOfficeList", [])
 
 if not daily_list:
-    st.warning("ℹ️ **그날은 아직 집계 전입니다.**")
+    st.warning("ℹ️ **그날은 아직 집계 전이거나 데이터가 없습니다.**")
     st.stop()
 
 df = pd.DataFrame(daily_list)
