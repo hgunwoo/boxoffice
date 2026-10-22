@@ -13,68 +13,19 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. 다크 & 그라데이션 CSS (날짜 입력창 및 사이드바 시인성 완전 해결)
+# 2. 모던 다크 테마 커스텀 CSS (안정적인 기본 위젯 스타일)
 st.markdown(
     """
     <style>
-    /* 메인 앱 배경 (딥 다크 블루 그라데이션) */
+    /* 전체 배경 */
     .stApp {
-        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+        background-color: #0f172a;
         color: #f8fafc;
     }
     
-    /* 사이드바 배경 그라데이션 및 테두리 */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
-        border-right: 1px solid #334155;
-    }
-    
-    /* 사이드바 내부 텍스트 전체 선명하게 설정 */
-    [data-testid="stSidebar"] *, 
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] span,
-    [data-testid="stSidebar"] h1,
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3 {
-        color: #f8fafc !important;
-    }
-
-    /* 🔥 날짜 입력창(Date Input) 시인성 완전 해결 🔥 */
-    /* 1) 입력 박스 전체 배경을 어두운 테마로 변경 */
-    [data-testid="stSidebar"] div[data-baseweb="input"],
-    [data-testid="stSidebar"] div[data-baseweb="base-input"] {
-        background-color: #1e293b !important;
-        border: 1px solid #64748b !important;
-        border-radius: 10px !important;
-    }
-    
-    /* 2) 텍스트 글자색을 선명한 흰색으로 강제 지정 */
-    [data-testid="stSidebar"] input[type="text"],
-    [data-testid="stSidebar"] input {
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
-        background-color: transparent !important;
-        font-weight: 700 !important;
-        font-size: 1rem !important;
-    }
-
-    /* 3) 달력 아이콘 및 도움말 아이콘 색상 보정 */
-    [data-testid="stSidebar"] svg,
-    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] svg {
-        fill: #38bdf8 !important;
-        color: #38bdf8 !important;
-    }
-    
-    /* 사이드바 캡션(범례 내용) */
-    [data-testid="stSidebar"] .stCaption {
-        color: #cbd5e1 !important;
-        font-size: 0.9rem !important;
-    }
-
     /* 메인 타이틀 그라데이션 */
     .main-title {
-        font-size: 2.3rem;
+        font-size: 2.2rem;
         font-weight: 800;
         background: linear-gradient(90deg, #38bdf8, #a855f7, #ec4899);
         -webkit-background-clip: text;
@@ -84,59 +35,46 @@ st.markdown(
     .sub-title {
         font-size: 0.95rem;
         color: #94a3b8;
-        margin-bottom: 1.8rem;
+        margin-bottom: 1.5rem;
     }
 
-    /* 1위 영화 하이라이트 고급 그라데이션 카드 */
+    /* 1위 영화 카드 (글래스모피즘 & 그라데이션) */
     .hero-card {
         background: linear-gradient(135deg, rgba(67, 56, 202, 0.4) 0%, rgba(147, 51, 234, 0.4) 100%);
-        backdrop-filter: blur(12px);
         border: 1px solid rgba(168, 85, 247, 0.4);
-        border-radius: 20px;
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
     }
     .hero-badge {
         background: linear-gradient(90deg, #f59e0b, #fbbf24);
         color: #000;
         font-weight: 800;
-        font-size: 0.8rem;
-        padding: 4px 12px;
-        border-radius: 20px;
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 12px;
         display: inline-block;
-        margin-bottom: 10px;
-        letter-spacing: 0.5px;
+        margin-bottom: 8px;
     }
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 800;
         color: #ffffff;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
-    /* Streamlit Metric 커스텀 카드 */
-    [data-testid="stMetric"] {
-        background: rgba(30, 41, 59, 0.6);
-        backdrop-filter: blur(8px);
+    /* 영화 프로필 카드 */
+    .profile-card {
+        background: #1e293b;
         border: 1px solid #334155;
-        border-radius: 14px;
-        padding: 14px 18px;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
     }
-    [data-testid="stMetricLabel"] {
-        color: #94a3b8 !important;
-        font-size: 0.85rem !important;
-    }
-    [data-testid="stMetricValue"] {
-        color: #f8fafc !important;
-        font-size: 1.6rem !important;
-        font-weight: 700 !important;
-    }
-
-    /* 구분선 라이트 처리 */
-    hr {
-        border-color: #334155 !important;
-        margin: 1.5rem 0 !important;
+    .profile-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #38bdf8;
+        margin-bottom: 8px;
     }
     </style>
 """,
@@ -161,8 +99,8 @@ now_seoul = datetime.datetime.now(seoul_tz)
 yesterday = (now_seoul - datetime.timedelta(days=1)).date()
 
 with st.sidebar:
-    st.markdown("## 🎬 **BOX OFFICE**")
-    st.markdown("---")
+    st.title("🎬 BOX OFFICE")
+    st.divider()
 
     selected_date = st.date_input(
         "📅 조회 날짜 선택",
@@ -171,26 +109,16 @@ with st.sidebar:
         help="오늘 날짜 데이터는 아직 집계 중이므로 어제 날짜까지 선택 가능합니다.",
     )
 
-    st.markdown("---")
-    st.markdown("### 📌 **범례 안내**")
-    st.caption("• 🏆 : 누적 관객수 100만 명 돌파")
-    st.caption("• 🔺 : 전일 대비 순위 상승")
-    st.caption("• 🔹 : 전일 대비 순위 하강")
+    st.divider()
+    st.subheader("📌 범례 안내")
+    st.markdown("• **🏆** : 누적 관객수 100만 명 돌파")
+    st.markdown("• **🔺** : 전일 대비 순위 상승")
+    st.markdown("• **🔹** : 전일 대비 순위 하강")
 
 target_dt = selected_date.strftime("%Y%m%d")
 formatted_date = selected_date.strftime("%Y년 %m월 %d일")
 
-# 5. 메인 헤더
-st.markdown(
-    f'<div class="main-title">{selected_date.strftime("%Y.%m.%d")} 일별 박스오피스</div>',
-    unsafe_allow_html=True,
-)
-st.markdown(
-    f'<div class="sub-title">영화진흥위원회(KOBIS) 공식 집계 데이터 기준 ({formatted_date})</div>',
-    unsafe_allow_html=True,
-)
-
-# 6. KOBIS API 데이터 요청
+# 5. KOBIS API 데이터 요청
 url = (
     "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
     f"?key={api_key}&targetDt={target_dt}"
@@ -204,7 +132,7 @@ except requests.exceptions.RequestException:
     st.error("📡 **네트워크 요청 실패**: KOBIS 서버와 통신할 수 없습니다.")
     st.stop()
 
-# 7. 응답 예외 처리
+# 6. 응답 예외 처리
 if "faultInfo" in data:
     fault_msg = data["faultInfo"].get("message", "알 수 없는 오류가 발생했습니다.")
     st.error(f"⚠️ **KOBIS API 오류**: {fault_msg}")
@@ -217,7 +145,7 @@ if not daily_list:
     st.info("ℹ️ **그날은 아직 집계 전입니다.**")
     st.stop()
 
-# 8. 데이터 가공
+# 7. 데이터 가공
 df = pd.DataFrame(daily_list)
 
 numeric_cols = ["rank", "rankInten", "audiCnt", "audiAcc", "scrnCnt", "showCnt"]
@@ -244,106 +172,141 @@ df["display_movieNm"] = df.apply(
     axis=1,
 )
 
-# 9. 1위 영화 하이라이트 배너 (Hero Section)
-top_1 = df.iloc[0]
-
+# 8. 메인 헤더 표시
 st.markdown(
-    f"""
-    <div class="hero-card">
-        <div class="hero-badge">DAILY NO.1</div>
-        <div class="hero-title">{top_1['display_movieNm']}</div>
-    </div>
-""",
+    f'<div class="main-title">{selected_date.strftime("%Y.%m.%d")} 일별 박스오피스</div>',
+    unsafe_allow_html=True,
+)
+st.markdown(
+    f'<div class="sub-title">영화진흥위원회(KOBIS) 공식 집계 데이터 기준 ({formatted_date})</div>',
     unsafe_allow_html=True,
 )
 
-m_col1, m_col2, m_col3 = st.columns(3)
-with m_col1:
-    st.metric(label="당일 관객수", value=f"{top_1['audiCnt']:,} 명")
-with m_col2:
-    st.metric(label="누적 관객수", value=f"{top_1['audiAcc']:,} 명")
-with m_col3:
-    st.metric(label="스크린 수", value=f"{top_1['scrnCnt']:,} 개")
+# 9. 탭(Tab) 구성을 통한 메인 화면 & 100만 관객 영화 목록 분리
+tab1, tab2 = st.tabs(["📊 메인 대시보드", "🏆 100만 관객 돌파 영화 목록"])
 
-st.markdown("---")
+with tab1:
+    # 1위 영화 하이라이트 배너
+    top_1 = df.iloc[0]
 
-# 10. 차트 및 데이터 표 (2열 레이아웃)
-col_chart, col_table = st.columns([1, 1], gap="large")
-
-with col_chart:
-    st.markdown("### 📊 **관객수 TOP 5**")
-
-    top_5_df = df.head(5).sort_values(by="audiCnt", ascending=True)
-
-    # Plotly 세련된 화려한 그라데이션 가로 막대그래프
-    fig = px.bar(
-        top_5_df,
-        x="audiCnt",
-        y="movieNm",
-        orientation="h",
-        text_auto=",.0f",
-        labels={"audiCnt": "관객수", "movieNm": ""},
-        color="audiCnt",
-        color_continuous_scale=["#38bdf8", "#a855f7", "#ec4899"],
+    st.markdown(
+        f"""
+        <div class="hero-card">
+            <div class="hero-badge">DAILY NO.1</div>
+            <div class="hero-title">{top_1['display_movieNm']}</div>
+        </div>
+    """,
+        unsafe_allow_html=True,
     )
 
-    fig.update_traces(
-        textposition="outside",
-        cliponaxis=False,
-        hovertemplate="<b>%{y}</b><br>관객수: %{x:,}명<extra></extra>",
-    )
+    m_col1, m_col2, m_col3 = st.columns(3)
+    with m_col1:
+        st.metric(label="당일 관객수", value=f"{top_1['audiCnt']:,} 명")
+    with m_col2:
+        st.metric(label="누적 관객수", value=f"{top_1['audiAcc']:,} 명")
+    with m_col3:
+        st.metric(label="스크린 수", value=f"{top_1['scrnCnt']:,} 개")
 
-    fig.update_layout(
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        xaxis=dict(
-            showgrid=True,
-            gridcolor="#334155",
-            title="",
-            tickfont=dict(color="#94a3b8"),
-        ),
-        yaxis=dict(showgrid=False, tickfont=dict(color="#f8fafc", size=13)),
-        coloraxis_showscale=False,
-        margin=dict(l=0, r=45, t=10, b=0),
-        height=350,
-    )
+    st.divider()
 
-    st.plotly_chart(fig, use_container_width=True)
+    # 차트 및 표
+    col_chart, col_table = st.columns([1, 1], gap="large")
 
-with col_table:
-    st.markdown("### 📋 **박스오피스 전체 순위**")
+    with col_chart:
+        st.markdown("### 📊 **관객수 TOP 5**")
+        top_5_df = df.head(5).sort_values(by="audiCnt", ascending=True)
 
-    display_df = df[
-        [
-            "rank",
-            "rankChange",
-            "display_movieNm",
-            "openDt",
-            "audiCnt",
-            "audiAcc",
-            "scrnCnt",
+        fig = px.bar(
+            top_5_df,
+            x="audiCnt",
+            y="movieNm",
+            orientation="h",
+            text_auto=",.0f",
+            labels={"audiCnt": "관객수", "movieNm": ""},
+            color="audiCnt",
+            color_continuous_scale=["#38bdf8", "#a855f7", "#ec4899"],
+        )
+
+        fig.update_traces(
+            textposition="outside",
+            cliponaxis=False,
+            hovertemplate="<b>%{y}</b><br>관객수: %{x:,}명<extra></extra>",
+        )
+
+        fig.update_layout(
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(
+                showgrid=True,
+                gridcolor="#334155",
+                title="",
+                tickfont=dict(color="#94a3b8"),
+            ),
+            yaxis=dict(showgrid=False, tickfont=dict(color="#f8fafc", size=13)),
+            coloraxis_showscale=False,
+            margin=dict(l=0, r=45, t=10, b=0),
+            height=350,
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col_table:
+        st.markdown("### 📋 **박스오피스 전체 순위**")
+
+        display_df = df[
+            [
+                "rank",
+                "rankChange",
+                "display_movieNm",
+                "openDt",
+                "audiCnt",
+                "audiAcc",
+                "scrnCnt",
+            ]
+        ].copy()
+        display_df.columns = [
+            "순위",
+            "변동",
+            "영화명",
+            "개봉일",
+            "관객수",
+            "누적관객",
+            "스크린수",
         ]
-    ].copy()
-    display_df.columns = [
-        "순위",
-        "변동",
-        "영화명",
-        "개봉일",
-        "관객수",
-        "누적관객",
-        "스크린수",
-    ]
 
-    st.dataframe(
-        display_df,
-        use_container_width=True,
-        hide_index=True,
-        height=350,
-        column_config={
-            "순위": st.column_config.NumberColumn(width="small"),
-            "변동": st.column_config.TextColumn(width="small"),
-            "관객수": st.column_config.NumberColumn(format="%d 명"),
-            "누적관객": st.column_config.NumberColumn(format="%d 명"),
-            "스크린수": st.column_config.NumberColumn(format="%d 개"),
-        },
-    )
+        st.dataframe(
+            display_df,
+            use_container_width=True,
+            hide_index=True,
+            height=350,
+            column_config={
+                "순위": st.column_config.NumberColumn(width="small"),
+                "변동": st.column_config.TextColumn(width="small"),
+                "관객수": st.column_config.NumberColumn(format="%d 명"),
+                "누적관객": st.column_config.NumberColumn(format="%d 명"),
+                "스크린수": st.column_config.NumberColumn(format="%d 개"),
+            },
+        )
+
+with tab2:
+    st.markdown("### 🏆 **누적 관객수 100만 명 돌파 영화 프로필**")
+    
+    # 누적 관객 100만 이상 영화 필터링
+    million_df = df[df["audiAcc"] >= 1000000]
+
+    if million_df.empty:
+        st.info("해당 날짜 박스오피스 TOP 10 내에 누적 관객 100만 명을 돌파한 영화가 없습니다.")
+    else:
+        for idx, row in million_df.iterrows():
+            st.markdown(
+                f"""
+                <div class="profile-card">
+                    <div class="profile-title">🏆 {row['rank']}위 : {row['movieNm']}</div>
+                    <p style="margin-bottom: 4px; color: #cbd5e1;"><b>📅 개봉일:</b> {row['openDt']}</p>
+                    <p style="margin-bottom: 4px; color: #cbd5e1;"><b>🎟️ 누적 관객수:</b> {row['audiAcc']:,} 명</p>
+                    <p style="margin-bottom: 4px; color: #cbd5e1;"><b>👥 당일 관객수:</b> {row['audiCnt']:,} 명</p>
+                    <p style="margin-bottom: 0px; color: #cbd5e1;"><b>🖥️ 상영 스크린수:</b> {row['scrnCnt']:,} 개</p>
+                </div>
+            """,
+                unsafe_allow_html=True,
+            )
